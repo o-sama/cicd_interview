@@ -67,22 +67,22 @@ jobs:
           POSTGRES_LATEST_PORT: 5433
         run: |
           apk --update add postgresql-client
+
+          db_prod=postgres-prod://postgres:postgres@$POSTGRES_HOST:$POSTGRES_PROD_PORT/postgres
+          db_latest=postgres-latest://postgres:postgres@$POSTGRES_LATEST_HOST:$POSTGRES_LATEST_PORT/postgres
           
-          psql postgres -h $POSTGRES_HOST -p $POSTGRES_PROD_PORT -U postgres -P postgres -c ^"CREATE TABLE films (^
+          psql $db_prod -c ^"CREATE TABLE films (^
           code        char(5) CONSTRAINT firstkey PRIMARY KEY ^
           title       varchar(40) NOT NULL ^
           );"
 
-          psql postgres -h $POSTGRES_LATEST_HOST -p $POSTGRES_LATEST_PORT -U postgres -P postgres -c ^"CREATE TABLE films ( ^
+          psql $db_latest -c ^"CREATE TABLE films ( ^
           code        char(5) CONSTRAINT firstkey PRIMARY KEY ^
           title       varchar(20) ^
           additional  char(5) ^
           );"
 
           pip install migra
-
-          db_prod=postgres-prod://postgres:postgres@$POSTGRES_HOST:$POSTGRES_PROD_PORT/postgres
-          db_latest=postgres-latest://postgres:postgres@$POSTGRES_LATEST_HOST:$POSTGRES_LATEST_PORT/postgres
 
           migra $db_prod db_latest
 
