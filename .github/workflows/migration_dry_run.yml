@@ -68,20 +68,16 @@ jobs:
         run: |
           apk --update add postgresql-client
           
-          psql -d postgres -h $POSTGRES_HOST -p $POSTGRES_PROD_PORT -U postgres -P postgres <<EOF
-          CREATE TABLE films (
-          code        char(5) CONSTRAINT firstkey PRIMARY KEY,
-          title       varchar(40) NOT NULL
-          );
-          EOF
+          psql -d postgres -h $POSTGRES_HOST -p $POSTGRES_PROD_PORT -U postgres -P postgres -c ^"CREATE TABLE films (^
+          code        char(5) CONSTRAINT firstkey PRIMARY KEY ^
+          title       varchar(40) NOT NULL ^
+          );"
 
-          psql -d postgres -h $POSTGRES_LATEST_HOST -p $POSTGRES_LATEST_PORT -U postgres -P postgres <<EOF
-          CREATE TABLE films (
-          code        char(5) CONSTRAINT firstkey PRIMARY KEY,
-          title       varchar(20),
-          additional  char(5)
-          );
-          EOF
+          psql -d postgres -h $POSTGRES_LATEST_HOST -p $POSTGRES_LATEST_PORT -U postgres -P postgres -c ^"CREATE TABLE films ( ^
+          code        char(5) CONSTRAINT firstkey PRIMARY KEY ^
+          title       varchar(20) ^
+          additional  char(5) ^
+          );"
 
           pip install migra
 
