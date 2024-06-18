@@ -66,7 +66,8 @@ jobs:
           POSTGRES_LATEST_HOST: postgres-latest
           POSTGRES_LATEST_PORT: 5432
         run: |
-          apk --update add postgresql-client
+          apk --update add postgresql-client \
+          && apk add postgresql-dev
 
           db_prod=postgresql://postgres:postgres@$POSTGRES_HOST:$POSTGRES_PROD_PORT/postgres
           db_latest=postgresql://postgres:postgres@$POSTGRES_LATEST_HOST:$POSTGRES_LATEST_PORT/postgres
