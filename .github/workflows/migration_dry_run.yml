@@ -68,8 +68,8 @@ jobs:
         run: |
           apk --update add postgresql-client
 
-          db_prod=postgres://postgres:postgres@$POSTGRES_HOST:$POSTGRES_PROD_PORT/postgres
-          db_latest=postgres://postgres:postgres@$POSTGRES_LATEST_HOST:$POSTGRES_LATEST_PORT/postgres
+          db_prod=postgresql://postgres:postgres@$POSTGRES_HOST:$POSTGRES_PROD_PORT/postgres
+          db_latest=postgresql://postgres:postgres@$POSTGRES_LATEST_HOST:$POSTGRES_LATEST_PORT/postgres
           
           psql $db_prod -c "CREATE TABLE films (code char(5) CONSTRAINT firstkey PRIMARY KEY, title varchar(40) NOT NULL);"
 
