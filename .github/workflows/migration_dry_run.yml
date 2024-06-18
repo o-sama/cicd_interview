@@ -52,7 +52,7 @@ jobs:
           --health-retries 5
         ports:
           # Maps tcp port 5432 on service container to the host
-          - 5432:5433
+          - 5433:5432
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -64,7 +64,7 @@ jobs:
           POSTGRES_HOST: postgres-prod
           POSTGRES_PROD_PORT: 5432
           POSTGRES_LATEST_HOST: postgres-latest
-          POSTGRES_LATEST_PORT: 5433
+          POSTGRES_LATEST_PORT: 5432
         run: |
           apk --update add postgresql-client
 
