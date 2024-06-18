@@ -66,7 +66,7 @@ jobs:
           POSTGRES_LATEST_HOST: postgres-latest
           POSTGRES_LATEST_PORT: 5433
         run: |
-          apt-get install psql
+          apt install psql
           
           psql -d postgres -h $POSTGRES_HOST -p $POSTGRES_PROD_PORT -u postgres -p postgres <<EOF
           CREATE TABLE films (
