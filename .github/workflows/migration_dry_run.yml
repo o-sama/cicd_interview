@@ -75,7 +75,7 @@ jobs:
 
           psql $db_latest -c "CREATE TABLE films (code char(5) CONSTRAINT firstkey PRIMARY KEY,title varchar(20), additional char(5));"
 
-          pip install migra
+          pip install psycopg2 migra
 
           migra $db_prod db_latest
 
