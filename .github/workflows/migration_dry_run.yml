@@ -1,0 +1,94 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    container: python:3.10.14-alpine3.20
+
+    services:
+      postgres-prod:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
+      postgres-latest:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5433:5433
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        env:
+          # The hostname used to communicate with the PostgreSQL service container
+          POSTGRES_HOST: postgres-prod
+          POSTGRES_PROD_PORT: 5432
+          POSTGRES_LATEST_HOST: postgres-latest
+          POSTGRES_LATEST_PORT: 5433
+        run: |
+          apt-get install psql
+          
+          psql -d postgres -h $POSTGRES_HOST -p $POSTGRES_PROD_PORT -u postgres -p postgres <<EOF
+          CREATE TABLE films (
+          code        char(5) CONSTRAINT firstkey PRIMARY KEY,
+          title       varchar(40) NOT NULL
+          );
+          EOF
+
+          psql -d postgres -h $POSTGRES_LATEST_HOST -p $POSTGRES_LATEST_PORT -u postgres -p postgres <<EOF
+          CREATE TABLE films (
+          code        char(5) CONSTRAINT firstkey PRIMARY KEY,
+          title       varchar(20),
+          additional  char(5)
+          );
+          EOF
+
+          pip install migra
+
+          db_prod=postgres-prod://postgres:postgres@$POSTGRES_HOST:$POSTGRES_PROD_PORT/postgres
+          db_latest=postgres-latest://postgres:postgres@$POSTGRES_LATEST_HOST:$POSTGRES_LATEST_PORT/postgres
+
+          migra $db_prod db_latest
+
+          
+          
